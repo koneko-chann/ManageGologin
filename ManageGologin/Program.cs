@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using static ManageGologin.Configuration.HostBuilder;
 namespace ManageGologin
 {
     internal static class Program
@@ -10,8 +12,12 @@ namespace ManageGologin
         {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
+
+            var host = CreateHostBuilder().Build();
+            var ServiceProvider = host.Services;
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+
+            Application.Run(ServiceProvider.GetRequiredService<Form1>());
         }
     }
 }
