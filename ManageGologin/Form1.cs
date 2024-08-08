@@ -1,6 +1,11 @@
-﻿using ManageGologin.ManagePhysicalPath;
+﻿using ManageGologin.Helper;
+using ManageGologin.ManagePhysicalPath;
+using ManageGologin.Models;
+using ManageGologin.Pagination;
+using ManageGologin.Services;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Windows.Forms;
 
@@ -10,32 +15,41 @@ namespace ManageGologin
     {
         private readonly IProfileManager _profileManager;
         List<IWebDriver> webDrivers = new List<IWebDriver>();
-        public Form1(IProfileManager profileManager)
+        private readonly GeolocationService _geolocationService;
+        public Form1(IProfileManager profileManager, GeolocationService geolocationService)
         {
             InitializeComponent();
             _profileManager = profileManager;
+            _geolocationService = geolocationService;   
         }
 
         private async void PathInputBtn_Click(object sender, EventArgs e)
         {
             var tasks = new List<Task<IWebDriver>>();
 
-            foreach (var profileName in _profileManager.GetProfiles().Select(x => x.ProfileName))
+            foreach (var profile in ((ProfileManager)_profileManager).Profiles)
             {
-                tasks.Add(Task.Run(() => _profileManager.OpenProfile(profileName)));
-                Thread.Sleep(3000);
+                tasks.Add(Task.Run(() => _profileManager.OpenProfile(profile)));
+                await Task.Delay(3000); // Sử dụng Task.Delay để không chặn luồng hiện tại
             }
 
-            var drivers = await Task.WhenAll(tasks);
-
-            foreach (var driver in drivers)
+            try
             {
-                webDrivers.Add(driver);
+                var drivers = await Task.WhenAll(tasks);
+
+                foreach (var driver in drivers)
+                {
+                    webDrivers.Add(driver);
+                }
+
+                MessageBox.Show("All profiles opened successfully!");
             }
-
-            MessageBox.Show("All profiles opened successfully!");
-
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}");
+            }
         }
+
 
         private void ExitProgramBtn_Click(object sender, EventArgs e)
         {
@@ -135,6 +149,150 @@ namespace ManageGologin
             {
                 Directory.Delete(subFolder, true);
             }
+        }
+
+        private void useScriptCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            btnJsFolder.Enabled = useScriptCheckbox.Checked;
+            btnJsFolder.Visible = useScriptCheckbox.Checked;
+            button1.Enabled = useScriptCheckbox.Checked;
+            button1.Visible = useScriptCheckbox.Checked;
+        }
+
+        private void GologinProfiles_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            profilesBindingSource.DataSource = _profileManager.GetProfiles();
+        }
+
+        private void proxyInsertBtn_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Text files (*.txt)|*.txt";
+            openFileDialog.Title = "Select a text file containing proxies";
+            openFileDialog.CheckFileExists = true;
+            openFileDialog.CheckPathExists = true;
+            // Hiển thị hộp thoại chọn file và kiểm tra nếu người dùng chọn file
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // Lấy đường dẫn file
+                string filePath = openFileDialog.FileName;
+
+                // Đường dẫn tới file proxy.txt
+                string outputFilePath = Path.Combine(Environment.CurrentDirectory, Resources.ProxyFile);
+
+                // Clear nội dung file proxy.txt nếu tồn tại
+                if (File.Exists(outputFilePath))
+                {
+                    File.WriteAllText(outputFilePath, string.Empty);
+                }
+
+                // Đọc nội dung file đã chọn
+                string fileContent = File.ReadAllText(filePath);
+
+                //clear file proxy
+                //    File.WriteAllText(outputFilePath, string.Empty);
+
+                //đọc từng dòng proxy và check
+                string[] lines = File.ReadAllLines(filePath);
+                foreach (string line in lines)
+                {
+                    if (!CustomProxy.CheckFormat(line))
+                    {
+                        throw new ArgumentException("Proxy must be in the format {address}:{port}:{username}:{password}");
+                    }
+                }
+
+
+                // Ghi nội dung vào file proxy.txt
+                File.WriteAllText(outputFilePath, fileContent, Encoding.UTF8);
+
+                MessageBox.Show("File content has been successfully copied to proxy.txt.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+        }
+        private async Task CheckProxyAsync(Profiles profile)
+        {
+            if (!await profile.Proxy.IsProxyAliveAsync())
+            {
+                profile.Proxy.ProxyStatus = "Dead";
+            }
+            else
+            {
+                profile.Proxy.ProxyStatus = "Alive";
+            }
+        }
+
+        private async void checkProxyBtn_Click(object sender, EventArgs e)
+        {
+            var profilesList = profilesBindingSource.DataSource as List<Profiles>;
+
+            if (profilesList != null)
+            {
+                // Cập nhật tất cả trạng thái thành "Checking"
+                foreach (var profile in profilesList)
+                {
+                    profile.Proxy.ProxyStatus = "Checking";
+                }
+                 profilesBindingSource.ResetBindings(false); // Cập nhật DataGridView
+                var tasks = new ConcurrentBag<Task>();
+
+                // Chạy tác vụ kiểm tra proxy song song
+                await Task.Run(() =>
+                {
+                    Parallel.ForEach(profilesList, profile =>
+                    {
+                        tasks.Add(CheckProxyAsync(profile));
+                    });
+                });
+
+                await Task.WhenAll(tasks);
+
+                // Thông báo cho BindingSource về thay đổi
+                profilesBindingSource.ResetBindings(false);
+            }
+        }
+
+        private void GologinProfiles_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (GologinProfiles.Columns[e.ColumnIndex].Name == "Status")
+            {
+                string status = e.Value as string;
+                if (status == "Alive")
+                {
+                    e.CellStyle.BackColor = Color.Green;
+                    e.CellStyle.ForeColor = Color.White;
+                }
+                else if (status == "Dead")
+                {
+                    e.CellStyle.BackColor = Color.Red;
+                    e.CellStyle.ForeColor = Color.White;
+                }
+                else if (status == "Checking")
+                {
+                    e.CellStyle.BackColor = Color.Yellow;
+                    e.CellStyle.ForeColor = Color.Black;
+                }
+            }
+        }
+
+        private void selectAllBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach (var row in GologinProfiles.Rows)
+            {
+                DataGridViewRow r = row as DataGridViewRow;
+                r.Cells[0].Value = selectAllBtn.Checked;
+            }
+        }
+
+        private void itemsPerPageCbx_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            profilesBindingSource.ResetBindings(false);
+            GologinProfiles.Refresh();
         }
     }
 }

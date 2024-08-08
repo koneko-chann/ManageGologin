@@ -10,9 +10,10 @@ namespace ManageGologin.Models
     public class Profiles
     {
         public uint STT { get; set; }
-        [Display(Name ="Profile Name")]
         public string ProfileName { get; set; }
-        public string? Proxy { get; set; }
         public string? DataPath { get; set; }
+        public CustomProxy Proxy { get; set; }
+
+
     }
 }

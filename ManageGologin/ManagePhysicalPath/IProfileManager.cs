@@ -1,4 +1,5 @@
 ﻿using ManageGologin.Models;
+using ManageGologin.Pagination;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
@@ -11,8 +12,10 @@ namespace ManageGologin.ManagePhysicalPath
 {
     public interface IProfileManager
     {
-        List<Profiles> GetProfiles();
-       Task<IWebDriver> OpenProfile(string name);
+        Task<IWebDriver> OpenProfile(Profiles profiles);
         Task CloseProfile(ChromeDriver driver);
+        List<Profiles> GetProfiles(PagingParameters pagingParameters);
+        List<Profiles> GetProfiles();
+        void SetProfiles(List<Profiles> profiles);
     }
 }

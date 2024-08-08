@@ -13,7 +13,7 @@ namespace ManageGologin.Helper
             var webAndJs = new Dictionary<string, string>();
 
             // Đọc từng dòng của file navigationwebs.txt
-            string webFilesPath = Path.Combine(Environment.CurrentDirectory, "navigationwebs.txt");
+            string webFilesPath = Path.Combine(Environment.CurrentDirectory, Resources.NavigationWebsFile);
             List<string> webLines = new List<string>();
             if (File.Exists(webFilesPath))
             {
@@ -21,8 +21,8 @@ namespace ManageGologin.Helper
             }
 
             // Đọc nội dung của các file trong thư mục JS
-            string jsFolderPath = Path.Combine(Environment.CurrentDirectory, "JS");
-            var jsFilesContent = new Dictionary<string, string>();
+            string jsFolderPath = Path.Combine(Environment.CurrentDirectory, Resources.JSFolder);
+            var jsFilesContent = new List<string>();
             if (Directory.Exists(jsFolderPath))
             {
                 var jsFiles = Directory.GetFiles(jsFolderPath, "*.txt");
@@ -30,19 +30,17 @@ namespace ManageGologin.Helper
                 {
                     string fileName = Path.GetFileName(jsFile);
                     string fileContent = File.ReadAllText(jsFile);
-                    jsFilesContent[fileName] = fileContent;
+                    jsFilesContent.Add (fileContent);
                 }
             }
 
-            // Ghép nội dung của từng dòng từ navigationwebs.txt với nội dung của từng file .txt
-            foreach (var webLine in webLines)
+            // Ghép nội dung của từng dòng từ navigationwebs.txt với nội dung của từng file .txt theo thứ tự
+            
+            for (int i = 0; i < webLines.Count; i++)
             {
-                foreach (var jsFile in jsFilesContent)
-                {
-                    string combinedContent = webLine + Environment.NewLine + jsFile.Value;
-                    string combinedKey = webLine + "_" + jsFile.Key; // Tạo khóa duy nhất cho mỗi kết hợp
-                    webAndJs[combinedKey] = combinedContent;
-                }
+                string webLine = webLines[i];
+                string jsFileContent= jsFilesContent[i];
+                webAndJs.Add(webLine, jsFileContent);
             }
 
             return webAndJs;
@@ -50,7 +48,7 @@ namespace ManageGologin.Helper
         public static void CheckWebAndJsCounts()
         {
             // Đọc số lượng dòng trong file navigationwebs.txt
-            string webFilesPath = Path.Combine(Environment.CurrentDirectory, "navigationwebs.txt");
+            string webFilesPath = Path.Combine(Environment.CurrentDirectory, Resources.NavigationWebsFile);
             int webLinesCount = 0;
             if (File.Exists(webFilesPath))
             {
@@ -58,7 +56,7 @@ namespace ManageGologin.Helper
             }
 
             // Đọc số lượng file trong thư mục JS
-            string jsFolderPath = Path.Combine(Environment.CurrentDirectory, "JS");
+            string jsFolderPath = Path.Combine(Environment.CurrentDirectory, Resources.JSFolder);
             int jsFilesCount = 0;
             if (Directory.Exists(jsFolderPath))
             {

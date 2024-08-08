@@ -2,6 +2,7 @@
 using ManageGologin.Attribute;
 using ManageGologin.Helper;
 using ManageGologin.Models;
+using ManageGologin.Pagination;
 using Microsoft.Extensions.DependencyInjection;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -19,43 +20,38 @@ namespace ManageGologin.ManagePhysicalPath
 {
     public class ProfileManager : IProfileManager
     {
-        [Path(ErrorMessage = "Path is not valid")]
-        public string ProfilePath { get; set; } = "E:\\Gologin";
         private IServiceProvider _serviceProvider;
-
+        public List<Profiles>? Profiles { get; set; }
         public ProfileManager(IServiceProvider serviceProvider)
         {
             this._serviceProvider = serviceProvider;
+            Profiles=ProfileHelper.GetProfiles();
         }
+        void IProfileManager.SetProfiles(List<Profiles> profiles)
+        {
+            Profiles = profiles;
+        }
+    
         public List<Profiles> GetProfiles()
         {
-            var browserDirectory = Path.Combine(this.ProfilePath, "browser");
-            var profiles = new List<Profiles>();
-            if (Directory.Exists(browserDirectory))
-            {
-                var directories = Directory.GetDirectories(browserDirectory);
-                uint stt = 1;
-                foreach (var directory in directories)
-                {
-                    var profile = Path.GetFileName(directory);
-                    profiles.Add(new Profiles
-                    {
-                        STT = stt,
-                        ProfileName = profile,
-                        DataPath = Path.Combine(directory),
-                    });
-                    stt++;
-                }
-            }
-            return profiles;
+            return Profiles;
         }
-        public async Task<IWebDriver> OpenProfile(string name)
+        //Get profiles with paging
+        public List<Profiles> GetProfiles(PagingParameters pagingParameters)
+        {
+            var items = Profiles.Skip((pagingParameters.PageNumber - 1) * pagingParameters.PageSize).Take(pagingParameters.PageSize).ToList();
+            return items;
+        }
+        public async Task<IWebDriver> OpenProfile(Profiles profiles)
         {
             ChromeProcessManager chromeProcessManager = new ChromeProcessManager();
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+            service.HideCommandPromptWindow = true; // Ẩn cửa sổ console
+            service.SuppressInitialDiagnosticInformation = true; // Tắt thông tin chuẩn đoán ban đầu
             var options = new ChromeOptions();
-           await options.GetDefaultSettingsAsync(name, this.ProfilePath, new Models.CustomProxy("45.43.64.130:6388:mwyvhbnr:retc2ujlzvq3"));
-            var driver = new ChromeDriver(options);
-            driver.Navigate().GoToUrl("https://x.com");
+           await options.GetDefaultSettingsAsync(profiles.ProfileName, Resources.ProfilePath, profiles.Proxy);
+            var driver = new ChromeDriver(service,options);
+            driver.Navigate().GoToUrl("https://iphey.com");
             
             return driver;
         }

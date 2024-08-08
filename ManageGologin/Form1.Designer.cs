@@ -30,13 +30,6 @@
         {
             components = new System.ComponentModel.Container();
             GologinProfiles = new DataGridView();
-            Selected = new DataGridViewCheckBoxColumn();
-            sTTDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            profileNameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            proxyDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            dataPathDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            Status = new DataGridViewTextBoxColumn();
-            RunBtn = new DataGridViewButtonColumn();
             profilesBindingSource = new BindingSource(components);
             label1 = new Label();
             gologinPath = new TextBox();
@@ -45,6 +38,23 @@
             btnJsFolder = new Button();
             folderBrowserDialog1 = new FolderBrowserDialog();
             button1 = new Button();
+            useScriptCheckbox = new CheckBox();
+            startupWebtxtbox = new TextBox();
+            label2 = new Label();
+            proxyInsertBtn = new Button();
+            checkProxyBtn = new Button();
+            selectAllBtn = new RadioButton();
+            itemsPerPageCbx = new ComboBox();
+            label3 = new Label();
+            Selected = new DataGridViewCheckBoxColumn();
+            sTTDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            profileNameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            dataPathDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            Status = new DataGridViewTextBoxColumn();
+            Proxy = new DataGridViewTextBoxColumn();
+            Run = new DataGridViewButtonColumn();
+            Stop = new DataGridViewButtonColumn();
+            RunWithProxy = new DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)GologinProfiles).BeginInit();
             ((System.ComponentModel.ISupportInitialize)profilesBindingSource).BeginInit();
             SuspendLayout();
@@ -54,56 +64,14 @@
             GologinProfiles.AutoGenerateColumns = false;
             GologinProfiles.BorderStyle = BorderStyle.Fixed3D;
             GologinProfiles.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            GologinProfiles.Columns.AddRange(new DataGridViewColumn[] { Selected, sTTDataGridViewTextBoxColumn, profileNameDataGridViewTextBoxColumn, proxyDataGridViewTextBoxColumn, dataPathDataGridViewTextBoxColumn, Status, RunBtn });
+            GologinProfiles.Columns.AddRange(new DataGridViewColumn[] { Selected, sTTDataGridViewTextBoxColumn, profileNameDataGridViewTextBoxColumn, dataPathDataGridViewTextBoxColumn, Status, Proxy, Run, Stop, RunWithProxy });
             GologinProfiles.DataSource = profilesBindingSource;
             GologinProfiles.Location = new Point(12, 199);
             GologinProfiles.Name = "GologinProfiles";
-            GologinProfiles.Size = new Size(1009, 328);
+            GologinProfiles.Size = new Size(1061, 366);
             GologinProfiles.TabIndex = 0;
-            // 
-            // Selected
-            // 
-            Selected.HeaderText = "Select";
-            Selected.Name = "Selected";
-            Selected.Resizable = DataGridViewTriState.True;
-            Selected.SortMode = DataGridViewColumnSortMode.Automatic;
-            // 
-            // sTTDataGridViewTextBoxColumn
-            // 
-            sTTDataGridViewTextBoxColumn.DataPropertyName = "STT";
-            sTTDataGridViewTextBoxColumn.HeaderText = "STT";
-            sTTDataGridViewTextBoxColumn.Name = "sTTDataGridViewTextBoxColumn";
-            // 
-            // profileNameDataGridViewTextBoxColumn
-            // 
-            profileNameDataGridViewTextBoxColumn.DataPropertyName = "ProfileName";
-            profileNameDataGridViewTextBoxColumn.HeaderText = "ProfileName";
-            profileNameDataGridViewTextBoxColumn.Name = "profileNameDataGridViewTextBoxColumn";
-            // 
-            // proxyDataGridViewTextBoxColumn
-            // 
-            proxyDataGridViewTextBoxColumn.DataPropertyName = "Proxy";
-            proxyDataGridViewTextBoxColumn.HeaderText = "Proxy";
-            proxyDataGridViewTextBoxColumn.Name = "proxyDataGridViewTextBoxColumn";
-            // 
-            // dataPathDataGridViewTextBoxColumn
-            // 
-            dataPathDataGridViewTextBoxColumn.DataPropertyName = "DataPath";
-            dataPathDataGridViewTextBoxColumn.HeaderText = "DataPath";
-            dataPathDataGridViewTextBoxColumn.Name = "dataPathDataGridViewTextBoxColumn";
-            // 
-            // Status
-            // 
-            Status.HeaderText = "Status";
-            Status.Name = "Status";
-            Status.ReadOnly = true;
-            // 
-            // RunBtn
-            // 
-            RunBtn.HeaderText = "Action";
-            RunBtn.Name = "RunBtn";
-            RunBtn.Text = "Run";
-            RunBtn.ToolTipText = "Run";
+            GologinProfiles.CellContentClick += GologinProfiles_CellContentClick;
+            GologinProfiles.CellFormatting += GologinProfiles_CellFormatting;
             // 
             // profilesBindingSource
             // 
@@ -147,29 +115,174 @@
             // 
             // btnJsFolder
             // 
-            btnJsFolder.Location = new Point(513, 8);
+            btnJsFolder.Enabled = false;
+            btnJsFolder.Location = new Point(842, 22);
             btnJsFolder.Name = "btnJsFolder";
             btnJsFolder.Size = new Size(179, 23);
             btnJsFolder.TabIndex = 5;
             btnJsFolder.Text = "Choose javasript folder";
             btnJsFolder.UseVisualStyleBackColor = true;
+            btnJsFolder.Visible = false;
             btnJsFolder.Click += btnJsFolder_Click;
             // 
             // button1
             // 
-            button1.Location = new Point(698, 8);
+            button1.Enabled = false;
+            button1.Location = new Point(842, 51);
             button1.Name = "button1";
-            button1.Size = new Size(116, 23);
+            button1.Size = new Size(179, 23);
             button1.TabIndex = 6;
             button1.Text = "Choose webs file";
             button1.UseVisualStyleBackColor = true;
+            button1.Visible = false;
             button1.Click += button1_Click;
+            // 
+            // useScriptCheckbox
+            // 
+            useScriptCheckbox.AutoSize = true;
+            useScriptCheckbox.Location = new Point(753, 25);
+            useScriptCheckbox.Name = "useScriptCheckbox";
+            useScriptCheckbox.Size = new Size(78, 19);
+            useScriptCheckbox.TabIndex = 7;
+            useScriptCheckbox.Text = "Use Script";
+            useScriptCheckbox.UseVisualStyleBackColor = true;
+            useScriptCheckbox.CheckedChanged += useScriptCheckbox_CheckedChanged;
+            // 
+            // startupWebtxtbox
+            // 
+            startupWebtxtbox.Location = new Point(141, 51);
+            startupWebtxtbox.Name = "startupWebtxtbox";
+            startupWebtxtbox.Size = new Size(191, 23);
+            startupWebtxtbox.TabIndex = 8;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(12, 54);
+            label2.Name = "label2";
+            label2.Size = new Size(66, 15);
+            label2.TabIndex = 9;
+            label2.Text = "Startup site";
+            // 
+            // proxyInsertBtn
+            // 
+            proxyInsertBtn.Location = new Point(894, 170);
+            proxyInsertBtn.Name = "proxyInsertBtn";
+            proxyInsertBtn.Size = new Size(179, 23);
+            proxyInsertBtn.TabIndex = 10;
+            proxyInsertBtn.Text = "Insert Multi Proxies";
+            proxyInsertBtn.UseVisualStyleBackColor = true;
+            proxyInsertBtn.Click += proxyInsertBtn_Click;
+            // 
+            // checkProxyBtn
+            // 
+            checkProxyBtn.Location = new Point(894, 141);
+            checkProxyBtn.Name = "checkProxyBtn";
+            checkProxyBtn.Size = new Size(179, 23);
+            checkProxyBtn.TabIndex = 11;
+            checkProxyBtn.Text = "Check Proxies";
+            checkProxyBtn.UseVisualStyleBackColor = true;
+            checkProxyBtn.Click += checkProxyBtn_Click;
+            // 
+            // selectAllBtn
+            // 
+            selectAllBtn.AutoSize = true;
+            selectAllBtn.Location = new Point(12, 174);
+            selectAllBtn.Name = "selectAllBtn";
+            selectAllBtn.Size = new Size(73, 19);
+            selectAllBtn.TabIndex = 12;
+            selectAllBtn.TabStop = true;
+            selectAllBtn.Text = "Select All";
+            selectAllBtn.UseVisualStyleBackColor = true;
+            selectAllBtn.CheckedChanged += selectAllBtn_CheckedChanged;
+            // 
+            // itemsPerPageCbx
+            // 
+            itemsPerPageCbx.FormattingEnabled = true;
+            itemsPerPageCbx.Items.AddRange(new object[] { "15", "30", "50", "100" });
+            itemsPerPageCbx.Location = new Point(12, 145);
+            itemsPerPageCbx.Name = "itemsPerPageCbx";
+            itemsPerPageCbx.Size = new Size(121, 23);
+            itemsPerPageCbx.TabIndex = 13;
+            itemsPerPageCbx.SelectedIndexChanged += itemsPerPageCbx_SelectedIndexChanged;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(12, 127);
+            label3.Name = "label3";
+            label3.Size = new Size(183, 15);
+            label3.TabIndex = 14;
+            label3.Text = "Select number of profile per page";
+            // 
+            // Selected
+            // 
+            Selected.HeaderText = "Select";
+            Selected.Name = "Selected";
+            Selected.Resizable = DataGridViewTriState.True;
+            Selected.SortMode = DataGridViewColumnSortMode.Automatic;
+            // 
+            // sTTDataGridViewTextBoxColumn
+            // 
+            sTTDataGridViewTextBoxColumn.DataPropertyName = "STT";
+            sTTDataGridViewTextBoxColumn.HeaderText = "STT";
+            sTTDataGridViewTextBoxColumn.Name = "sTTDataGridViewTextBoxColumn";
+            // 
+            // profileNameDataGridViewTextBoxColumn
+            // 
+            profileNameDataGridViewTextBoxColumn.DataPropertyName = "ProfileName";
+            profileNameDataGridViewTextBoxColumn.HeaderText = "ProfileName";
+            profileNameDataGridViewTextBoxColumn.Name = "profileNameDataGridViewTextBoxColumn";
+            // 
+            // dataPathDataGridViewTextBoxColumn
+            // 
+            dataPathDataGridViewTextBoxColumn.DataPropertyName = "DataPath";
+            dataPathDataGridViewTextBoxColumn.HeaderText = "DataPath";
+            dataPathDataGridViewTextBoxColumn.Name = "dataPathDataGridViewTextBoxColumn";
+            // 
+            // Status
+            // 
+            Status.DataPropertyName = "Proxy.ProxyStatus";
+            Status.HeaderText = "Status";
+            Status.Name = "Status";
+            Status.ReadOnly = true;
+            // 
+            // Proxy
+            // 
+            Proxy.DataPropertyName = "Proxy";
+            Proxy.HeaderText = "Proxy";
+            Proxy.Name = "Proxy";
+            // 
+            // Run
+            // 
+            Run.HeaderText = "Run";
+            Run.Name = "Run";
+            // 
+            // Stop
+            // 
+            Stop.HeaderText = "Stop";
+            Stop.Name = "Stop";
+            // 
+            // RunWithProxy
+            // 
+            RunWithProxy.HeaderText = "Run With Proxy";
+            RunWithProxy.Name = "RunWithProxy";
+            RunWithProxy.Resizable = DataGridViewTriState.True;
+            RunWithProxy.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1033, 539);
+            ClientSize = new Size(1085, 577);
+            Controls.Add(label3);
+            Controls.Add(itemsPerPageCbx);
+            Controls.Add(selectAllBtn);
+            Controls.Add(checkProxyBtn);
+            Controls.Add(proxyInsertBtn);
+            Controls.Add(label2);
+            Controls.Add(startupWebtxtbox);
+            Controls.Add(useScriptCheckbox);
             Controls.Add(button1);
             Controls.Add(btnJsFolder);
             Controls.Add(ExitProgramBtn);
@@ -179,6 +292,7 @@
             Controls.Add(GologinProfiles);
             Name = "Form1";
             Text = "Manage Gologin";
+            Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)GologinProfiles).EndInit();
             ((System.ComponentModel.ISupportInitialize)profilesBindingSource).EndInit();
             ResumeLayout(false);
@@ -191,17 +305,27 @@
         private Label label1;
         private TextBox gologinPath;
         private Button PathInputBtn;
-        private BindingSource profilesBindingSource;
         private Button ExitProgramBtn;
-        private DataGridViewCheckBoxColumn Selected;
-        private DataGridViewTextBoxColumn sTTDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn profileNameDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn proxyDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn dataPathDataGridViewTextBoxColumn;
-        private DataGridViewTextBoxColumn Status;
-        private DataGridViewButtonColumn RunBtn;
         private Button btnJsFolder;
         private FolderBrowserDialog folderBrowserDialog1;
         private Button button1;
+        private CheckBox useScriptCheckbox;
+        private TextBox startupWebtxtbox;
+        private Label label2;
+        private Button proxyInsertBtn;
+        private Button checkProxyBtn;
+        private BindingSource profilesBindingSource;
+        private RadioButton selectAllBtn;
+        private ComboBox itemsPerPageCbx;
+        private Label label3;
+        private DataGridViewCheckBoxColumn Selected;
+        private DataGridViewTextBoxColumn sTTDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn profileNameDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn dataPathDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn Status;
+        private DataGridViewTextBoxColumn Proxy;
+        private DataGridViewButtonColumn Run;
+        private DataGridViewButtonColumn Stop;
+        private DataGridViewButtonColumn RunWithProxy;
     }
 }

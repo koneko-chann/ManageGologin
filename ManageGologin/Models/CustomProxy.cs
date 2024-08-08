@@ -11,13 +11,31 @@ namespace ManageGologin.Models
         public int ProxyPort { get; set; }
         public string ProxyUsername { get; set; }
         public string ProxyPassword { get; set; }
+        public string? ProxyStatus { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public string TimeZone { get; set; }
 
         public CustomProxy() { }
 
         public CustomProxy(string proxy)
         {
-            // Proxy must follow this format: {address}:{port}:{username}:{password}
-            var proxyParts = proxy.Split(':');
+            // Proxy must follow this format: {address}:{port}:{username}:{password}|{status}
+            string[] statusSplit;
+            if (proxy.Contains('|'))
+            {
+                statusSplit = proxy.Split('|');
+                if (statusSplit.Length != 2 || (statusSplit[1] != "live" && statusSplit[1] != "dead"))
+                {
+                    throw new ArgumentException("Proxy must end with |live or |dead");
+                }
+            }
+            else
+            {
+                statusSplit = new string[] { proxy, "dead" };
+            }
+
+            var proxyParts = statusSplit[0].Split(':');
             if (proxyParts.Length != 4)
             {
                 throw new ArgumentException("Proxy must be in the format {address}:{port}:{username}:{password}");
@@ -31,6 +49,7 @@ namespace ManageGologin.Models
             ProxyPort = port;
             ProxyUsername = proxyParts[2];
             ProxyPassword = proxyParts[3];
+            ProxyStatus = statusSplit[1];
         }
 
         public async Task<bool> IsProxyAliveAsync()
@@ -54,6 +73,7 @@ namespace ManageGologin.Models
                 try
                 {
                     var response = await httpClient.GetAsync("https://www.microsoft.com");
+               //  await   Task.Delay(1000);    
                     return response.IsSuccessStatusCode;
                 }
                 catch (Exception)
@@ -61,6 +81,26 @@ namespace ManageGologin.Models
                     return false;
                 }
             }
+        }
+
+        public static bool CheckFormat(string proxy)
+        {
+            var proxyParts = proxy.Split(':');
+            if (proxyParts.Length != 4)
+            {
+                return false;
+            }
+
+            if (!int.TryParse(proxyParts[1], out int port))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        public override string ToString()
+        {
+            return $"{ProxyAddress}:{ProxyPort}";
         }
     }
 }
