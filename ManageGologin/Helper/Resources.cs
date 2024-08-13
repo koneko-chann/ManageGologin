@@ -11,7 +11,6 @@ namespace ManageGologin.Helper
         public static string JSFolder="JS";
         public static string NavigationWebsFile="navigationwebs.txt";
         public static string ProxyFile="proxy.txt";
-
         public static string ProfilePath="E:\\Gologin";
     }
 }

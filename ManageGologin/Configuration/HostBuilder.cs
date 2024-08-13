@@ -9,6 +9,7 @@ using OpenQA.Selenium;
 using System.Threading.Tasks;
 using OpenQA.Selenium.Chrome;
 using ManageGologin.Services;
+using ManageGologin.Manager;
 
 namespace ManageGologin.Configuration
 {
@@ -22,6 +23,7 @@ namespace ManageGologin.Configuration
                     services.AddTransient<IProfileManager, ProfileManager>();
                     services.AddTransient<IWebDriver, ChromeDriver>();
                     services.AddScoped<GeolocationService>();
+                    services.AddTransient<IProxyManager, ProxyManager>();
                     services.AddTransient<Form1>();
                 }); 
         }

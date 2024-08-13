@@ -12,7 +12,7 @@ namespace ManageGologin.ManagePhysicalPath
 {
     public interface IProfileManager
     {
-        Task<IWebDriver> OpenProfile(Profiles profiles);
+        Task<IWebDriver> OpenProfile(Profiles profiles,bool? startWithProxy=false);
         Task CloseProfile(ChromeDriver driver);
         List<Profiles> GetProfiles(PagingParameters pagingParameters);
         List<Profiles> GetProfiles();

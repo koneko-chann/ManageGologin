@@ -11,28 +11,23 @@ namespace ManageGologin.Models
         public int ProxyPort { get; set; }
         public string ProxyUsername { get; set; }
         public string ProxyPassword { get; set; }
-        public string? ProxyStatus { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public string TimeZone { get; set; }
+        public Geolocation? Geolocation { get; set; }
+        public string ProxyStatus { get; set; } = "dead";
+
 
         public CustomProxy() { }
 
         public CustomProxy(string proxy)
         {
-            // Proxy must follow this format: {address}:{port}:{username}:{password}|{status}
+            // Proxy must follow this format: {address}:{port}:{username}:{password}|{status}|{latitude}|{longitude}|{timezone}
             string[] statusSplit;
             if (proxy.Contains('|'))
             {
                 statusSplit = proxy.Split('|');
-                if (statusSplit.Length != 2 || (statusSplit[1] != "live" && statusSplit[1] != "dead"))
-                {
-                    throw new ArgumentException("Proxy must end with |live or |dead");
-                }
             }
             else
             {
-                statusSplit = new string[] { proxy, "dead" };
+                statusSplit = new string[] { proxy, "dead", "0", "0", "Asia/Bangkok" };
             }
 
             var proxyParts = statusSplit[0].Split(':');
@@ -49,7 +44,14 @@ namespace ManageGologin.Models
             ProxyPort = port;
             ProxyUsername = proxyParts[2];
             ProxyPassword = proxyParts[3];
-            ProxyStatus = statusSplit[1];
+            ProxyStatus = statusSplit.Length > 1 ? statusSplit[1] : "dead";
+
+             Geolocation = new Geolocation()
+            {
+                Latitude = statusSplit.Length > 2 && double.TryParse(statusSplit[2], out double lat) ? lat : 0,
+                Longitude = statusSplit.Length > 3 && double.TryParse(statusSplit[3], out double lon) ? lon : 0,
+                TimeZone = statusSplit.Length > 4 ? statusSplit[4] : "Asia/Bangkok"
+            };
         }
 
         public async Task<bool> IsProxyAliveAsync()
@@ -73,7 +75,6 @@ namespace ManageGologin.Models
                 try
                 {
                     var response = await httpClient.GetAsync("https://www.microsoft.com");
-               //  await   Task.Delay(1000);    
                     return response.IsSuccessStatusCode;
                 }
                 catch (Exception)
@@ -85,7 +86,13 @@ namespace ManageGologin.Models
 
         public static bool CheckFormat(string proxy)
         {
-            var proxyParts = proxy.Split(':');
+            var parts = proxy.Split('|');
+            if (parts.Length < 1)
+            {
+                return false;
+            }
+
+            var proxyParts = parts[0].Split(':');
             if (proxyParts.Length != 4)
             {
                 return false;
@@ -98,9 +105,26 @@ namespace ManageGologin.Models
 
             return true;
         }
+
         public override string ToString()
         {
             return $"{ProxyAddress}:{ProxyPort}";
+        }
+        public string ToFullString()
+        {
+            return $"{ProxyAddress}:{ProxyPort}:{ProxyUsername}:{ProxyPassword}|{ProxyStatus}|{Geolocation?.Latitude}|{Geolocation?.Longitude}|{Geolocation?.TimeZone}";
+        }
+        public override bool Equals(object? obj)
+        {
+            if (obj is CustomProxy proxy)
+            {
+                return ProxyAddress == proxy.ProxyAddress && ProxyPort == proxy.ProxyPort;
+            }
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return ProxyAddress.GetHashCode() ^ ProxyPort.GetHashCode();
         }
     }
 }

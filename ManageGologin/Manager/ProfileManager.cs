@@ -1,6 +1,7 @@
 ﻿using KillChromeGarbageProcesses;
 using ManageGologin.Attribute;
 using ManageGologin.Helper;
+using ManageGologin.Manager;
 using ManageGologin.Models;
 using ManageGologin.Pagination;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,16 +23,18 @@ namespace ManageGologin.ManagePhysicalPath
     {
         private IServiceProvider _serviceProvider;
         public List<Profiles>? Profiles { get; set; }
-        public ProfileManager(IServiceProvider serviceProvider)
+        private IProxyManager _proxyManager;
+        public ProfileManager(IServiceProvider serviceProvider, IProxyManager proxyManager)
         {
             this._serviceProvider = serviceProvider;
-            Profiles=ProfileHelper.GetProfiles();
+            this._proxyManager = proxyManager;
+            Profiles = ProfileHelper.GetProfiles(_proxyManager);
         }
-        void IProfileManager.SetProfiles(List<Profiles> profiles)
+        public void SetProfiles(List<Profiles> profiles)
         {
             Profiles = profiles;
         }
-    
+
         public List<Profiles> GetProfiles()
         {
             return Profiles;
@@ -42,17 +45,26 @@ namespace ManageGologin.ManagePhysicalPath
             var items = Profiles.Skip((pagingParameters.PageNumber - 1) * pagingParameters.PageSize).Take(pagingParameters.PageSize).ToList();
             return items;
         }
-        public async Task<IWebDriver> OpenProfile(Profiles profiles)
+        public async Task<IWebDriver> OpenProfile(Profiles profiles, bool? startWithProxy = false)
         {
             ChromeProcessManager chromeProcessManager = new ChromeProcessManager();
             ChromeDriverService service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true; // Ẩn cửa sổ console
             service.SuppressInitialDiagnosticInformation = true; // Tắt thông tin chuẩn đoán ban đầu
             var options = new ChromeOptions();
-           await options.GetDefaultSettingsAsync(profiles.ProfileName, Resources.ProfilePath, profiles.Proxy);
-            var driver = new ChromeDriver(service,options);
+            if (startWithProxy == true)
+            {
+                await options.GetDefaultSettingsAsync(profiles.ProfileName, Resources.ProfilePath, profiles.Proxy);
+            }
+            else
+            {
+                await options.GetDefaultSettingsAsync(profiles.ProfileName, Resources.ProfilePath, profiles.Proxy);
+            }
+            await profiles.SetPreferenceGeo(true);
+
+            var driver = new ChromeDriver(service, options);
             driver.Navigate().GoToUrl("https://iphey.com");
-            
+
             return driver;
         }
         public async Task CloseProfile(ChromeDriver driver)
