@@ -282,6 +282,7 @@
             proxyOpenBtn.TabStop = true;
             proxyOpenBtn.Text = "Open with proxy";
             proxyOpenBtn.UseVisualStyleBackColor = true;
+            proxyOpenBtn.CheckedChanged += proxyOpenBtn_CheckedChanged;
             // 
             // RunBtn
             // 

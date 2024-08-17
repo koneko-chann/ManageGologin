@@ -10,6 +10,7 @@ namespace ManageGologin.Helper
     {
         public static Dictionary<string, string> GetWebAndJs()
         {
+            CheckWebAndJsCounts();
             var webAndJs = new Dictionary<string, string>();
 
             // Đọc từng dòng của file navigationwebs.txt

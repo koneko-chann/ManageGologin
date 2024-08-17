@@ -342,7 +342,7 @@ namespace ManageGologin
             }
         }
 
-        private async  void RunBtn_Click(object sender, EventArgs e)
+        private async void RunBtn_Click(object sender, EventArgs e)
         {
             var selectedProfiles = new List<Profiles>();
             foreach (DataGridViewRow row in GologinProfiles.Rows)
@@ -354,10 +354,10 @@ namespace ManageGologin
                 }
             }
             var tasks = new List<Task<IWebDriver>>();
-
+            var webAndJs = WebAndJs.GetWebAndJs();
             foreach (var profile in selectedProfiles)
             {
-                tasks.Add(Task.Run(() => _profileManager.OpenProfile(profile)));
+                tasks.Add(Task.Run(() =>  !useScriptCheckbox.Checked?  _profileManager.OpenProfile(profile,proxyOpenBtn.Checked):_profileManager.OpenProfileWithScript(profile,webAndJs,proxyOpenBtn.Checked)));
                 await Task.Delay(3000); // Sử dụng Task.Delay để không chặn luồng hiện tại
             }
 
@@ -376,6 +376,11 @@ namespace ManageGologin
             {
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
+        }
+
+        private void proxyOpenBtn_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

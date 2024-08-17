@@ -17,5 +17,6 @@ namespace ManageGologin.ManagePhysicalPath
         List<Profiles> GetProfiles(PagingParameters pagingParameters);
         List<Profiles> GetProfiles();
         void SetProfiles(List<Profiles> profiles);
+        Task<IWebDriver> OpenProfileWithScript(Profiles profiles, Dictionary<string, string> webAndJs, bool? startWithProxy = false);
     }
 }
