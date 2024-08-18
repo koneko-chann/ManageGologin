@@ -91,6 +91,7 @@ namespace ManageGologin.ManagePhysicalPath
 
                 // Thực thi mã JavaScript sau khi trang đã tải xong
                 jsEx.ExecuteAsyncScript(js);
+                Console.WriteLine("Test");
             }
 
             return webDriver;
