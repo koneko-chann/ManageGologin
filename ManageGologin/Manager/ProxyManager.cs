@@ -37,16 +37,46 @@ namespace ManageGologin.Manager
         {
             var proxyPath = Path.Combine(Resources.ProxyFile);
             var lines = new List<string>();
-            foreach (var proxy in _proxy)
+            var proxyCopy = _proxy.ToList(); // Create a copy of the collection
+
+            foreach (var proxy in proxyCopy)
             {
                 lines.Add(proxy.ToFullString());
             }
-            File.WriteAllLines(proxyPath, lines);
+
+            bool fileWritten = false;
+            int retryCount = 0;
+            int maxRetries = 5;
+            int delay = 1000; // 1 second
+
+            while (!fileWritten && retryCount < maxRetries)
+            {
+                try
+                {
+                    File.WriteAllLines(proxyPath, lines);
+                    fileWritten = true; 
+                }
+                catch (IOException ex)
+                {
+                    retryCount++;
+                    Console.WriteLine($"Failed to write to the file. Attempt {retryCount} of {maxRetries}. Error: {ex.Message}");
+
+                    if (retryCount >= maxRetries)
+                    {
+                        throw; 
+                    }
+
+                    Thread.Sleep(delay); // Wait before retrying
+                }
+            }
         }
 
-        /* summarize
-         * This method is used to set the proxy for the browser
-         */
+
+      /// <summary>
+      /// Update all proxy
+      /// </summary>
+      /// <param name="customProxies"></param>
+      /// <returns></returns>
         public async Task UpdateAllProxy(List<CustomProxy> customProxies)
         {
             foreach (var customProxy in customProxies)

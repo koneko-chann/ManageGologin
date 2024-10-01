@@ -1,39 +1,34 @@
 ﻿using KillChromeGarbageProcesses;
 using ManageGologin.Attribute;
+using ManageGologin.Executor;
 using ManageGologin.Helper;
 using ManageGologin.Manager;
 using ManageGologin.Models;
 using ManageGologin.Pagination;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
+using NLog;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.DevTools;
 using OpenQA.Selenium.Support.UI;
-using Selenium.Extensions;
-using Selenium.WebDriver.UndetectedChromeDriver;
-using Sl.Selenium.Extensions.Chrome;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
-using WebDriverManager;
-using WebDriverManager.DriverConfigs.Impl;
+using static ManageGologin.Helper.LoggerHelper;
 
 namespace ManageGologin.ManagePhysicalPath
 {
     public class ProfileManager : IProfileManager
     {
-       // private IServiceProvider _serviceProvider;
+        // private IServiceProvider _serviceProvider;
         public List<Profiles>? Profiles { get; set; }
         private IProxyManager _proxyManager;
-        public ProfileManager(IServiceProvider serviceProvider, IProxyManager proxyManager)
+        private ILogger<ProfileManager> _logger;
+        public ProfileManager(IServiceProvider serviceProvider, IProxyManager proxyManager, ILogger<ProfileManager> logger)
         {
             //this._serviceProvider = serviceProvider;
             this._proxyManager = proxyManager;
             Profiles = ProfileHelper.GetProfiles(_proxyManager);
+            _logger = logger;
         }
         public void SetProfiles(List<Profiles> profiles)
         {
@@ -66,9 +61,12 @@ namespace ManageGologin.ManagePhysicalPath
             {
                 await options.GetDefaultSettingsAsync(profiles.ProfileName, Resources.ProfilePath);
             }
+            options.AddExtension(Resources.RabbyWalletExtension);
             await profiles.SetPreferenceGeo(startWithProxy);
             var driver = new ChromeDriver(service, options);
-            driver.Navigate().GoToUrl("https://iphey.com");
+            var RabbyInstall= new InstallRabby(driver,profiles);
+           await RabbyInstall.Execute();
+          //  driver.Navigate().GoToUrl("https://iphey.com");
 
             return driver;
         }
