@@ -32,7 +32,7 @@ namespace ManageGologin.Helper
                         STT = stt,
                         ProfileName = profile,
                         DataPath = Path.Combine(directory),
-                        Proxy = proxies[(int)stt - 1]
+                        Proxy = ((int)stt - 1>= proxies.Count) ? null : proxies[(int)stt - 1]
                     });
                     stt++;
                 }
