@@ -31,7 +31,7 @@ namespace ManageGologin.Configuration
                     services.AddTransient<IWebDriver, ChromeDriver>();
                     services.AddScoped<GeolocationService>();
                     services.AddTransient<IProxyManager, ProxyManager>();
-                    services.AddTransient<Form1>();
+                    services.AddSingleton<Form1>();
                     services.AddLogging(loggingBuilder =>
                     {
                         loggingBuilder.ClearProviders(); // Clear default logging providers

@@ -27,13 +27,13 @@ namespace KillChromeGarbageProcesses
         {
             try
             {
-                Console.WriteLine($"{DateTime.Now} Start killing Chrome garbage processes");
+          //      Console.WriteLine($"{DateTime.Now} Start killing Chrome garbage processes");
 
                 var chromeProcesses = Process.GetProcessesByName("chrome");
 
                 if (chromeProcesses.Length == 0)
                 {
-                    Console.WriteLine("No Chrome processes found");
+                 //   Console.WriteLine("No Chrome processes found");
                     return;
                 }
 
@@ -122,11 +122,11 @@ namespace KillChromeGarbageProcesses
                 {
                     var proc = Process.GetProcessById(pid);
                     proc.Kill();
-                    Console.WriteLine($"Killed process {pid}");
+                //    Console.WriteLine($"Killed process {pid}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error killing process {pid}: {ex.Message}");
+                   // Console.WriteLine($"Error killing process {pid}: {ex.Message}");
                 }
             }
         }

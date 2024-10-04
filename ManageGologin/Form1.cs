@@ -357,7 +357,7 @@ namespace ManageGologin
             var webAndJs = WebAndJs.GetWebAndJs();
             foreach (var profile in selectedProfiles)
             {
-                tasks.Add(Task.Run(() =>  !useScriptCheckbox.Checked?  _profileManager.OpenProfile(profile,proxyOpenBtn.Checked):_profileManager.OpenProfileWithScript(profile,webAndJs,proxyOpenBtn.Checked)));
+                tasks.Add(Task.Run(() => !useScriptCheckbox.Checked ? _profileManager.OpenProfile(profile, proxyOpenBtn.Checked) : _profileManager.OpenProfileWithScript(profile, webAndJs, proxyOpenBtn.Checked)));
                 await Task.Delay(3000); // Sử dụng Task.Delay để không chặn luồng hiện tại
             }
 
@@ -379,6 +379,11 @@ namespace ManageGologin
         }
 
         private void proxyOpenBtn_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void installRabbyBtn_CheckedChanged(object sender, EventArgs e)
         {
 
         }

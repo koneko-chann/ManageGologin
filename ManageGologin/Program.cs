@@ -5,6 +5,7 @@ using NLog;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using static ManageGologin.Configuration.HostBuilder;
+
 namespace ManageGologin
 {
     internal static class Program

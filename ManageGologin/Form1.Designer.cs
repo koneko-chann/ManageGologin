@@ -56,6 +56,8 @@
             label3 = new Label();
             proxyOpenBtn = new RadioButton();
             RunBtn = new Button();
+            installRabbyBtn = new RadioButton();
+            radioButton2 = new RadioButton();
             ((System.ComponentModel.ISupportInitialize)GologinProfiles).BeginInit();
             ((System.ComponentModel.ISupportInitialize)profilesBindingSource).BeginInit();
             SuspendLayout();
@@ -294,11 +296,36 @@
             RunBtn.UseVisualStyleBackColor = true;
             RunBtn.Click += RunBtn_Click;
             // 
+            // installRabbyBtn
+            // 
+            installRabbyBtn.AutoSize = true;
+            installRabbyBtn.Location = new Point(508, 77);
+            installRabbyBtn.Name = "installRabbyBtn";
+            installRabbyBtn.Size = new Size(185, 19);
+            installRabbyBtn.TabIndex = 17;
+            installRabbyBtn.TabStop = true;
+            installRabbyBtn.Text = "Install Rabby Wallet For Profile";
+            installRabbyBtn.UseVisualStyleBackColor = true;
+            installRabbyBtn.CheckedChanged += installRabbyBtn_CheckedChanged;
+            // 
+            // radioButton2
+            // 
+            radioButton2.AutoSize = true;
+            radioButton2.Location = new Point(508, 102);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(80, 19);
+            radioButton2.TabIndex = 18;
+            radioButton2.TabStop = true;
+            radioButton2.Text = "Run Game";
+            radioButton2.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1085, 577);
+            Controls.Add(radioButton2);
+            Controls.Add(installRabbyBtn);
             Controls.Add(RunBtn);
             Controls.Add(proxyOpenBtn);
             Controls.Add(label3);
@@ -354,5 +381,7 @@
         private DataGridViewButtonColumn RunWithProxy;
         private RadioButton proxyOpenBtn;
         private Button RunBtn;
+        public RadioButton installRabbyBtn;
+        private RadioButton radioButton2;
     }
 }

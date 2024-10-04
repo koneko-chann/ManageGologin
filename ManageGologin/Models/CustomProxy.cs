@@ -27,7 +27,7 @@ namespace ManageGologin.Models
             }
             else
             {
-                statusSplit = new string[] { proxy, "dead", "0", "0", "Asia/Bangkok" };
+                statusSplit = [proxy, "dead", "0", "0", "Asia/Bangkok"];
             }
 
             var proxyParts = statusSplit[0].Split(':');

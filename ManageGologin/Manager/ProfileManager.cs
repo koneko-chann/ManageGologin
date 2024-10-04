@@ -23,12 +23,14 @@ namespace ManageGologin.ManagePhysicalPath
         public List<Profiles>? Profiles { get; set; }
         private IProxyManager _proxyManager;
         private ILogger<ProfileManager> _logger;
+        private IServiceProvider _serviceProvider;
         public ProfileManager(IServiceProvider serviceProvider, IProxyManager proxyManager, ILogger<ProfileManager> logger)
         {
             //this._serviceProvider = serviceProvider;
             this._proxyManager = proxyManager;
             Profiles = ProfileHelper.GetProfiles(_proxyManager);
             _logger = logger;
+            _serviceProvider = serviceProvider;
         }
         public void SetProfiles(List<Profiles> profiles)
         {
@@ -61,12 +63,16 @@ namespace ManageGologin.ManagePhysicalPath
             {
                 await options.GetDefaultSettingsAsync(profiles.ProfileName, Resources.ProfilePath);
             }
-            options.AddExtension(Resources.RabbyWalletExtension);
+            if (_serviceProvider.GetService<Form1>().installRabbyBtn.Checked == true)
+            {
+                options.AddExtension(Resources.RabbyWalletExtension);
+            }
             await profiles.SetPreferenceGeo(startWithProxy);
             var driver = new ChromeDriver(service, options);
             var RabbyInstall= new InstallRabby(driver,profiles);
-           await RabbyInstall.Execute();
-          //  driver.Navigate().GoToUrl("https://iphey.com");
+            await RabbyInstall.Execute();
+
+            await CloseProfile  (driver);
 
             return driver;
         }
@@ -80,14 +86,11 @@ namespace ManageGologin.ManagePhysicalPath
             {
                 var web = key;
                 var js = webAndJs[key];
-
                 // Điều hướng đến URL
                 await webDriver.Navigate().GoToUrlAsync(web);
 
-                // Chờ cho đến khi trang web tải xong (DOM hoàn tất tải)
                 wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
 
-                // Thực thi mã JavaScript sau khi trang đã tải xong
                 jsEx.ExecuteAsyncScript(js);
                 Console.WriteLine("Test");
             }
