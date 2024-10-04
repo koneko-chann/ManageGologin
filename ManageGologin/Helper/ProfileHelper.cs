@@ -2,11 +2,6 @@
 using ManageGologin.Models;
 using ManageGologin.Services;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ManageGologin.Helper
 {
@@ -32,7 +27,7 @@ namespace ManageGologin.Helper
                         STT = stt,
                         ProfileName = profile,
                         DataPath = Path.Combine(directory),
-                        Proxy = ((int)stt - 1>= proxies.Count) ? null : proxies[(int)stt - 1]
+                        Proxy = ((int)stt - 1 >= proxies.Count) ? null : proxies[(int)stt - 1]
                     });
                     stt++;
                 }

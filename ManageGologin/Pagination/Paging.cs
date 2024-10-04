@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ManageGologin.Pagination
+﻿namespace ManageGologin.Pagination
 {
-    public class Paging<T>: List<T>
+    public class Paging<T> : List<T>
     {
         public int PageNumber { get; private set; }
         public int PageSize { get; private set; }

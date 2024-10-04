@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ManageGologin.Helper
+﻿namespace ManageGologin.Helper
 {
     public static class WebAndJs
     {
@@ -31,16 +25,16 @@ namespace ManageGologin.Helper
                 {
                     string fileName = Path.GetFileName(jsFile);
                     string fileContent = File.ReadAllText(jsFile);
-                    jsFilesContent.Add (fileContent);
+                    jsFilesContent.Add(fileContent);
                 }
             }
 
             // Ghép nội dung của từng dòng từ navigationwebs.txt với nội dung của từng file .txt theo thứ tự
-            
+
             for (int i = 0; i < webLines.Count; i++)
             {
                 string webLine = webLines[i];
-                string jsFileContent= jsFilesContent[i];
+                string jsFileContent = jsFilesContent[i];
                 webAndJs.Add(webLine, jsFileContent);
             }
 

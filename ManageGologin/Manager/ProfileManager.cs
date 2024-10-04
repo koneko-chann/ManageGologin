@@ -1,19 +1,13 @@
-﻿using KillChromeGarbageProcesses;
-using ManageGologin.Attribute;
-using ManageGologin.Executor;
+﻿using ManageGologin.Executor;
 using ManageGologin.Helper;
 using ManageGologin.Manager;
 using ManageGologin.Models;
 using ManageGologin.Pagination;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using NLog;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.DevTools;
 using OpenQA.Selenium.Support.UI;
-using static ManageGologin.Helper.LoggerHelper;
 
 namespace ManageGologin.ManagePhysicalPath
 {
@@ -49,8 +43,7 @@ namespace ManageGologin.ManagePhysicalPath
         }
         public async Task<IWebDriver> OpenProfile(Profiles profiles, bool? startWithProxy = false)
         {
-          
-            ChromeProcessManager chromeProcessManager = new ChromeProcessManager();
+
             ChromeDriverService service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true; // Ẩn cửa sổ console
             service.SuppressInitialDiagnosticInformation = true; // Tắt thông tin chuẩn đoán ban đầu
@@ -69,16 +62,19 @@ namespace ManageGologin.ManagePhysicalPath
             }
             await profiles.SetPreferenceGeo(startWithProxy);
             var driver = new ChromeDriver(service, options);
-            var RabbyInstall= new InstallRabby(driver,profiles);
+            var RabbyInstall = new InstallRabby(ref driver, profiles);
             await RabbyInstall.Execute();
 
-            await CloseProfile  (driver);
-
+            CloseProfile(ref driver);
+            if (driver == null || driver.SessionId == null)
+            {
+                return null;
+            }
             return driver;
         }
-        public async Task<IWebDriver> OpenProfileWithScript(Profiles profiles, Dictionary<string, string> webAndJs, bool? startWithProxy = false )
+        public async Task<IWebDriver> OpenProfileWithScript(Profiles profiles, Dictionary<string, string> webAndJs, bool? startWithProxy = false)
         {
-            var webDriver = await OpenProfile(profiles,startWithProxy);
+            var webDriver = await OpenProfile(profiles, startWithProxy);
             IJavaScriptExecutor jsEx = (IJavaScriptExecutor)webDriver;
             WebDriverWait wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(3));
 
@@ -97,11 +93,42 @@ namespace ManageGologin.ManagePhysicalPath
 
             return webDriver;
         }
-        public async Task CloseProfile(ChromeDriver driver)
+        public void CloseProfile(ref ChromeDriver driver)
         {
-            driver.Close();
-            driver.Quit();
+            try
+            {
+                if (driver != null)
+                {
+                    // Attempt to close the browser window
+                    driver.Close();
+                    Console.WriteLine("Browser window closed successfully.");
+                }
+            }
+            catch (OpenQA.Selenium.WebDriverException ex)
+            {
+                Console.WriteLine($"Error during closing browser window: {ex.Message}");
+            }
+
+            try
+            {
+                if (driver != null)
+                {
+                    // Attempt to quit the driver and close all associated windows
+                    driver.Quit();
+                    Console.WriteLine("Driver quit successfully.");
+                }
+            }
+            catch (OpenQA.Selenium.WebDriverException ex)
+            {
+                Console.WriteLine($"Error during quitting the driver: {ex.Message}");
+            }
+            finally
+            {
+                // Set driver to null to indicate it has been closed or quit
+                driver = null;
+            }
         }
+
 
 
     }

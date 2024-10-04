@@ -1,13 +1,8 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ManageGologin.Configuration
 {
-    public class AutoMap :Profile
+    public class AutoMap : Profile
     {
     }
 }

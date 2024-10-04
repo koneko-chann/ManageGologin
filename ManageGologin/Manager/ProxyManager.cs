@@ -1,15 +1,10 @@
 ﻿using ManageGologin.Helper;
 using ManageGologin.Models;
 using ManageGologin.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ManageGologin.Manager
 {
-    public class ProxyManager: IProxyManager
+    public class ProxyManager : IProxyManager
     {
         private List<CustomProxy> _proxy;
         private readonly GeolocationService geolocationService;
@@ -31,7 +26,7 @@ namespace ManageGologin.Manager
         }
         public List<CustomProxy> GetProxy()
         {
-           return _proxy.ToList();
+            return _proxy.ToList();
         }
         private void SaveProxy()
         {
@@ -54,7 +49,7 @@ namespace ManageGologin.Manager
                 try
                 {
                     File.WriteAllLines(proxyPath, lines);
-                    fileWritten = true; 
+                    fileWritten = true;
                 }
                 catch (IOException ex)
                 {
@@ -63,7 +58,7 @@ namespace ManageGologin.Manager
 
                     if (retryCount >= maxRetries)
                     {
-                        throw; 
+                        throw;
                     }
 
                     Thread.Sleep(delay); // Wait before retrying
@@ -72,11 +67,11 @@ namespace ManageGologin.Manager
         }
 
 
-      /// <summary>
-      /// Update all proxy
-      /// </summary>
-      /// <param name="customProxies"></param>
-      /// <returns></returns>
+        /// <summary>
+        /// Update all proxy
+        /// </summary>
+        /// <param name="customProxies"></param>
+        /// <returns></returns>
         public async Task UpdateAllProxy(List<CustomProxy> customProxies)
         {
             foreach (var customProxy in customProxies)
@@ -91,8 +86,8 @@ namespace ManageGologin.Manager
         public async Task UpdateProxy(CustomProxy customProxy)
         {
             var index = _proxy.ToList().FindIndex(x => x.ProxyAddress == customProxy.ProxyAddress);
-      
-            var geolocation =await geolocationService.GetGeolocation(customProxy);
+
+            var geolocation = await geolocationService.GetGeolocation(customProxy);
             customProxy.Geolocation = geolocation;
             if (index != -1)
             {
@@ -100,8 +95,8 @@ namespace ManageGologin.Manager
                 SaveProxy();
             }
         }
-     
+
 
     }
-   
+
 }

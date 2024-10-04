@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 namespace ManageGologin.Models
 {
@@ -46,7 +43,7 @@ namespace ManageGologin.Models
             ProxyPassword = proxyParts[3];
             ProxyStatus = statusSplit.Length > 1 ? statusSplit[1] : "dead";
 
-             Geolocation = new Geolocation()
+            Geolocation = new Geolocation()
             {
                 Latitude = statusSplit.Length > 2 && double.TryParse(statusSplit[2], out double lat) ? lat : 0,
                 Longitude = statusSplit.Length > 3 && double.TryParse(statusSplit[3], out double lon) ? lon : 0,

@@ -1,39 +1,28 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Collections.Generic;
-using System.Timers;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using Timer=System.Timers.Timer;
+﻿using System.Diagnostics;
 using System.Management;
 
 
 namespace KillChromeGarbageProcesses
 {
-    class ChromeProcessManager
+    class ChromeProcessManager : IDisposable
     {
-        private Timer _timer;
 
         public ChromeProcessManager()
         {
-            _timer = new Timer(2000); // 2000 milliseconds = 2 seconds
-            _timer.Elapsed += KillChromeGarbageProcesses;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
+            KillChromeGarbageProcesses();
         }
 
-        private void KillChromeGarbageProcesses(Object source, ElapsedEventArgs e)
+        private void KillChromeGarbageProcesses()
         {
             try
             {
-          //      Console.WriteLine($"{DateTime.Now} Start killing Chrome garbage processes");
+                //      Console.WriteLine($"{DateTime.Now} Start killing Chrome garbage processes");
 
                 var chromeProcesses = Process.GetProcessesByName("chrome");
 
                 if (chromeProcesses.Length == 0)
                 {
-                 //   Console.WriteLine("No Chrome processes found");
+                    //   Console.WriteLine("No Chrome processes found");
                     return;
                 }
 
@@ -122,13 +111,18 @@ namespace KillChromeGarbageProcesses
                 {
                     var proc = Process.GetProcessById(pid);
                     proc.Kill();
-                //    Console.WriteLine($"Killed process {pid}");
+                    //    Console.WriteLine($"Killed process {pid}");
                 }
                 catch (Exception ex)
                 {
-                   // Console.WriteLine($"Error killing process {pid}: {ex.Message}");
+                    // Console.WriteLine($"Error killing process {pid}: {ex.Message}");
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
 
         public class ChromeProcessInfo

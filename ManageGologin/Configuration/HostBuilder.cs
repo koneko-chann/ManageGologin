@@ -1,19 +1,14 @@
 ﻿using ManageGologin.ManagePhysicalPath;
+using ManageGologin.Manager;
+using ManageGologin.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using OpenQA.Selenium;
-using System.Threading.Tasks;
-using OpenQA.Selenium.Chrome;
-using ManageGologin.Services;
-using ManageGologin.Manager;
-using NLog;
-using NLog.Web;
 using Microsoft.Extensions.Logging;
+using NLog;
 using NLog.Extensions.Logging;
+using NLog.Web;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 
 namespace ManageGologin.Configuration
 {

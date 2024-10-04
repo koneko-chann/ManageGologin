@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NLog;
 using NLog.Config;
 using NLog.Targets;
-using NLog;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using static ManageGologin.Configuration.HostBuilder;
 
@@ -82,6 +81,6 @@ namespace ManageGologin
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool AllocConsole();
-        
+
     }
 }

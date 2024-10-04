@@ -8,7 +8,6 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System.Collections.Concurrent;
 using System.Text;
-using System.Windows.Forms;
 
 namespace ManageGologin
 {
@@ -56,7 +55,8 @@ namespace ManageGologin
 
         private void ExitProgramBtn_Click(object sender, EventArgs e)
         {
-            _profileManager.CloseProfile(webDrivers[0] as ChromeDriver);
+            var chromeDriver = (ChromeDriver)webDrivers[0];
+            _profileManager.CloseProfile(ref chromeDriver);
         }
 
         private void btnJsFolder_Click(object sender, EventArgs e)

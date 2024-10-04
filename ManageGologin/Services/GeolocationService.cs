@@ -1,15 +1,8 @@
 ﻿using ManageGologin.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ManageGologin.Services
 {
@@ -97,7 +90,7 @@ namespace ManageGologin.Services
                 var response = await httpClient.GetAsync("https://api.ipify.org");
                 return await response.Content.ReadAsStringAsync();
             }
-            
+
         }
 
     }

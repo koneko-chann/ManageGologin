@@ -1,13 +1,10 @@
 ﻿using ManageGologin.Executor.InterfaceExecutor;
+using ManageGologin.Helper;
 using ManageGologin.Models;
+using OfficeOpenXml;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using Selenium.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TextCopy;
 
 namespace ManageGologin.Executor
 {
@@ -16,7 +13,7 @@ namespace ManageGologin.Executor
         private bool _isInstalled;
         private IWebDriver _driver;
         private Profiles _profile;
-        public InstallRabby(IWebDriver driver, Profiles profiles)
+        public InstallRabby(ref ChromeDriver driver, Profiles profiles)
         {
             _isInstalled = false;
             _driver = driver;
@@ -29,33 +26,32 @@ namespace ManageGologin.Executor
                 LogDebug("Rabby is already installed");
                 return;
             }
-        await    Task.Delay(3000);   
+            await Task.Delay(3000);
             LogDebug("Installing Rabby");
-            //await InstallRabbyWallet();
             await CreateWallet();
-
         }
         private async Task<bool> CheckIfInstalled()
         {
             await _driver.Navigate().GoToUrlAsync("chrome-extension://acmacodkjbdgmoleebolmdjonilkdbch/popup.html#/welcome");
-            var existingElement = _driver.FindElements(By.ClassName("step-title"));
-            if (existingElement.Count == 0)
+            var pageContent = _driver.PageSource;
+            if (pageContent.Contains("rabby"))
             {
                 return false;
             }
-            return true;
-        }   
+            return false;
+        }
         private async Task InstallRabbyWallet()
         {
             await _driver.Navigate().GoToUrlAsync("https://chromewebstore.google.com/detail/rabby-wallet/acmacodkjbdgmoleebolmdjonilkdbch?pli=1");
             await Task.Delay(3000);
             var installButton = _driver.FindElement(By.XPath("//*[@id=\"yDmH0d\"]/c-wiz/div/div/main/div/section[1]/section/div[2]/div/button"));
-            
+
             /*installButton.Click();
             await Task.Delay(5000);
             var pageContent = _driver.PageSource;
             LogInfo(pageContent);*/
         }
+        [STAThread]
         private async Task CreateWallet()
         {
             PerformActionWithWindowCheck(() => _driver.FindElement(By.XPath("/html/body/div/div/section/footer/button")).Click());
@@ -78,14 +74,15 @@ namespace ManageGologin.Executor
             foreach (string winHandle in _driver.WindowHandles)
             {
                 _driver.SwitchTo().Window(winHandle);
+                LogInfo(winHandle);
             }
-            PerformActionWithWindowCheck(() => _driver.FindElement(By.XPath("/html/body/div/div/div/div/div[2]/button")).Click());
+            PerformActionWithWindowCheck(() => _driver.FindElement(By.CssSelector("#root > div > div > div > div.text-center.mt-\\[76px\\] > button")).Click());
             await Task.Delay(1000);
-            
+
             PerformActionWithWindowCheck(() => _driver.FindElement(By.XPath("/html/body/div[1]/div/div/div/div[2]/div[3]")).Click());
 
             // Clipboard handling
-            var copiedText = Clipboard.GetText();
+            var copiedText = await ClipboardService.GetTextAsync();
             LogInfo(copiedText);
 
             await Task.Delay(3000);
@@ -98,20 +95,27 @@ namespace ManageGologin.Executor
             }
 
 
-         /*   _driver.Navigate().GoToUrl("https://chrome-extension://acmacodkjbdgmoleebolmdjonilkdbch/index.html#/import/select-address?hd=HD%20Key%20Tree&keyringId=1");
-           LogInfo(_driver.Url);*/
-          //  Thread.Sleep(1000000000);
+            /*   _driver.Navigate().GoToUrl("https://chrome-extension://acmacodkjbdgmoleebolmdjonilkdbch/index.html#/import/select-address?hd=HD%20Key%20Tree&keyringId=1");
+              LogInfo(_driver.Url);*/
+            //  Thread.Sleep(1000000000);
             await Task.Delay(2000);
 
             PerformActionWithWindowCheck(() =>
             {
                 LogInfo(_driver.Url);
-                var jsEx= (IJavaScriptExecutor)_driver;
+                var jsEx = (IJavaScriptExecutor)_driver;
                 jsEx.ExecuteScript("document.querySelector(\"#rc-tabs-0-panel-hd > div > div > div > div > div > div.ant-table-body > table > tbody > tr:nth-child(2) > td.ant-table-cell.cell-add > button\").click()");
             });
             await Task.Delay(500);
 
             PerformActionWithWindowCheck(() => _driver.FindElement(By.XPath("/html/body/div[1]/div/div/button")).Click());
+            SaveWallet(_profile, copiedText);
+
+            foreach (string winHandle in _driver.WindowHandles)
+            {
+                _driver.SwitchTo().Window(winHandle);
+                LogInfo(winHandle);
+            }
         }
 
         private void PerformActionWithWindowCheck(Action action)
@@ -143,6 +147,44 @@ namespace ManageGologin.Executor
 
                     // Retry the action after switching windows
                 }
+            }
+        }
+        private void SaveWallet(Profiles profiles, string mnemonic)
+        {
+            // Set EPPlus license context to non-commercial (required)
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            // File path to save the Excel file (modify path as needed)
+            var filePath = Resources.RabbyWalletPath;
+
+            // Create or open the Excel file
+            FileInfo fileInfo = new FileInfo(filePath);
+
+            using (var package = new ExcelPackage(fileInfo))
+            {
+                // Add or get an existing worksheet named "Wallets"
+                var worksheet = package.Workbook.Worksheets.FirstOrDefault(ws => ws.Name == "Wallets")
+                                ?? package.Workbook.Worksheets.Add("Wallets");
+
+                // Find the next empty row
+                int nextRow = worksheet.Dimension == null ? 1 : worksheet.Dimension.End.Row + 1;
+
+                // Write headers if it's the first row
+                if (nextRow == 1)
+                {
+                    worksheet.Cells[nextRow, 1].Value = "Profile Name";
+                    worksheet.Cells[nextRow, 2].Value = "Mnemonic";
+                    nextRow++; // Move to the next row for data
+                }
+
+                // Write profile name and mnemonic to the next row
+                worksheet.Cells[nextRow, 1].Value = profiles.ProfileName; // Profile Name in column 1
+                worksheet.Cells[nextRow, 2].Value = mnemonic;      // Mnemonic in column 2
+
+                // Save the changes to the file
+                package.Save();
+
+                LogInfo("Profile and mnemonic saved successfully!");
             }
         }
 

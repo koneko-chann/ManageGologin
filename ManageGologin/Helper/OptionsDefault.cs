@@ -1,8 +1,5 @@
 ﻿using ManageGologin.Models;
 using OpenQA.Selenium.Chrome;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace ManageGologin.Helper
 {
@@ -104,7 +101,7 @@ namespace ManageGologin.Helper
             options.AddArgument("--user-data-dir=" + Path.Combine(profilePath, "browser", name));
 
             // Thiết lập tùy chọn load extension
-           /* options.AddArgument("--load-extension=");*/
+            /* options.AddArgument("--load-extension=");*/
         }
     }
 }
