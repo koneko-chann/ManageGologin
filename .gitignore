@@ -362,3 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /ManageGologin/App.config
+<<<<<<< HEAD
+=======
+/ManageGologin/App.config
+>>>>>>> 004fe6a6efb4be0f004f1f172212173826f3a878
