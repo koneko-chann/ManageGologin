@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /ManageGologin/App.config
 /ManageGologin/App.config
+/ManageGologin/Helper/Resources.cs
+/ManageGologin/App.config
