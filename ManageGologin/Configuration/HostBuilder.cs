@@ -1,5 +1,6 @@
 ﻿using ManageGologin.ManagePhysicalPath;
 using ManageGologin.Manager;
+using ManageGologin.Runtime_Processor;
 using ManageGologin.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,6 +34,7 @@ namespace ManageGologin.Configuration
                         loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Debug);
                         loggingBuilder.AddNLog(); // Add NLog as logging provider
                     });
+                    services.AddSingleton<FormRuntimeExecutor>();
 
                 })
                 .UseNLog();

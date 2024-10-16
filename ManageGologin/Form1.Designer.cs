@@ -58,8 +58,11 @@
             RunBtn = new Button();
             installRabbyBtn = new RadioButton();
             radioButton2 = new RadioButton();
+            TaskPanel = new Panel();
+            button2 = new Button();
             ((System.ComponentModel.ISupportInitialize)GologinProfiles).BeginInit();
             ((System.ComponentModel.ISupportInitialize)profilesBindingSource).BeginInit();
+            TaskPanel.SuspendLayout();
             SuspendLayout();
             // 
             // GologinProfiles
@@ -298,8 +301,9 @@
             // 
             // installRabbyBtn
             // 
+            installRabbyBtn.AccessibleName = "InstallRabby";
             installRabbyBtn.AutoSize = true;
-            installRabbyBtn.Location = new Point(508, 77);
+            installRabbyBtn.Location = new Point(3, 20);
             installRabbyBtn.Name = "installRabbyBtn";
             installRabbyBtn.Size = new Size(185, 19);
             installRabbyBtn.TabIndex = 17;
@@ -311,7 +315,7 @@
             // radioButton2
             // 
             radioButton2.AutoSize = true;
-            radioButton2.Location = new Point(508, 102);
+            radioButton2.Location = new Point(3, 45);
             radioButton2.Name = "radioButton2";
             radioButton2.Size = new Size(80, 19);
             radioButton2.TabIndex = 18;
@@ -319,13 +323,32 @@
             radioButton2.Text = "Run Game";
             radioButton2.UseVisualStyleBackColor = true;
             // 
+            // TaskPanel
+            // 
+            TaskPanel.Controls.Add(installRabbyBtn);
+            TaskPanel.Controls.Add(radioButton2);
+            TaskPanel.Location = new Point(500, 12);
+            TaskPanel.Name = "TaskPanel";
+            TaskPanel.Size = new Size(200, 100);
+            TaskPanel.TabIndex = 19;
+            // 
+            // button2
+            // 
+            button2.Location = new Point(362, 126);
+            button2.Name = "button2";
+            button2.Size = new Size(75, 23);
+            button2.TabIndex = 20;
+            button2.Text = "Test";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1085, 577);
-            Controls.Add(radioButton2);
-            Controls.Add(installRabbyBtn);
+            Controls.Add(button2);
+            Controls.Add(TaskPanel);
             Controls.Add(RunBtn);
             Controls.Add(proxyOpenBtn);
             Controls.Add(label3);
@@ -348,6 +371,8 @@
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)GologinProfiles).EndInit();
             ((System.ComponentModel.ISupportInitialize)profilesBindingSource).EndInit();
+            TaskPanel.ResumeLayout(false);
+            TaskPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -383,5 +408,7 @@
         private Button RunBtn;
         public RadioButton installRabbyBtn;
         private RadioButton radioButton2;
+        public Panel TaskPanel;
+        private Button button2;
     }
 }

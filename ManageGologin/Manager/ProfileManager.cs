@@ -3,6 +3,7 @@ using ManageGologin.Helper;
 using ManageGologin.Manager;
 using ManageGologin.Models;
 using ManageGologin.Pagination;
+using ManageGologin.Runtime_Processor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
@@ -18,14 +19,18 @@ namespace ManageGologin.ManagePhysicalPath
         private IProxyManager _proxyManager;
         private ILogger<ProfileManager> _logger;
         private IServiceProvider _serviceProvider;
-        public ProfileManager(IServiceProvider serviceProvider, IProxyManager proxyManager, ILogger<ProfileManager> logger)
+        private List<string> _taskList;
+        private FormRuntimeExecutor _formRuntimeExecutor;
+        public ProfileManager(IServiceProvider serviceProvider, IProxyManager proxyManager, ILogger<ProfileManager> logger,FormRuntimeExecutor formRuntimeExecutor)
         {
             //this._serviceProvider = serviceProvider;
             this._proxyManager = proxyManager;
             Profiles = ProfileHelper.GetProfiles(_proxyManager);
             _logger = logger;
             _serviceProvider = serviceProvider;
+            _formRuntimeExecutor = formRuntimeExecutor;
         }
+
         public void SetProfiles(List<Profiles> profiles)
         {
             Profiles = profiles;
@@ -45,7 +50,7 @@ namespace ManageGologin.ManagePhysicalPath
         {
 
             ChromeDriverService service = ChromeDriverService.CreateDefaultService();
-            service.HideCommandPromptWindow = true; // Ẩn cửa sổ console
+            //service.HideCommandPromptWindow = true; // Ẩn cửa sổ console
             service.SuppressInitialDiagnosticInformation = true; // Tắt thông tin chuẩn đoán ban đầu
             var options = new ChromeOptions();
             if (startWithProxy == true)
@@ -56,16 +61,12 @@ namespace ManageGologin.ManagePhysicalPath
             {
                 await options.GetDefaultSettingsAsync(profiles.ProfileName, Resources.ProfilePath);
             }
-            if (_serviceProvider.GetService<Form1>().installRabbyBtn.Checked == true)
-            {
-                options.AddExtension(Resources.RabbyWalletExtension);
-            }
+            List<string> assemblyNames=GetTaskList();
             await profiles.SetPreferenceGeo(startWithProxy);
             var driver = new ChromeDriver(service, options);
-            var RabbyInstall = new InstallRabby(ref driver, profiles);
-            await RabbyInstall.Execute();
-
-            CloseProfile(ref driver);
+            _formRuntimeExecutor.ChoosedClasses = assemblyNames;
+            _formRuntimeExecutor.Execute(driver,profiles);
+            //CloseProfile(driver);
             if (driver == null || driver.SessionId == null)
             {
                 return null;
@@ -82,7 +83,6 @@ namespace ManageGologin.ManagePhysicalPath
             {
                 var web = key;
                 var js = webAndJs[key];
-                // Điều hướng đến URL
                 await webDriver.Navigate().GoToUrlAsync(web);
 
                 wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
@@ -93,34 +93,32 @@ namespace ManageGologin.ManagePhysicalPath
 
             return webDriver;
         }
-        public void CloseProfile(ref ChromeDriver driver)
+        public void CloseProfile(ChromeDriver driver)
         {
             try
             {
                 if (driver != null)
                 {
-                    // Attempt to close the browser window
                     driver.Close();
-                    Console.WriteLine("Browser window closed successfully.");
+                    LogInfo("Browser window closed successfully.");
                 }
             }
             catch (OpenQA.Selenium.WebDriverException ex)
             {
-                Console.WriteLine($"Error during closing browser window: {ex.Message}");
+                LogInfo($"Error during closing browser window: {ex.Message}");
             }
 
             try
             {
                 if (driver != null)
                 {
-                    // Attempt to quit the driver and close all associated windows
                     driver.Quit();
-                    Console.WriteLine("Driver quit successfully.");
+                    LogInfo("Driver quit successfully.");
                 }
             }
             catch (OpenQA.Selenium.WebDriverException ex)
             {
-                Console.WriteLine($"Error during quitting the driver: {ex.Message}");
+                LogInfo($"Error during quitting the driver: {ex.Message}");
             }
             finally
             {
@@ -128,8 +126,21 @@ namespace ManageGologin.ManagePhysicalPath
                 driver = null;
             }
         }
-
-
-
+        public List<string> GetTaskList()
+        {
+            var f1 = _serviceProvider.GetService<Form1>();
+            var radioButtons = f1.TaskPanel.Controls.OfType<RadioButton>().ToList();
+            List<string> strings = new List<string>();
+            foreach (var radioButton in radioButtons)
+            {
+                LogInfo($"RadioButton Name: {radioButton.AccessibleName}, Checked: {radioButton.Checked}");
+                if (radioButton.Checked)
+                {
+                    strings.Add(radioButton.AccessibleName);
+                }
+            }
+            return strings;
+        }
     }
+
 }

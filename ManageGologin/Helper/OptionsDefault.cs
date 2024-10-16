@@ -40,7 +40,8 @@ namespace ManageGologin.Helper
             options.AddArgument("--donut-pie=undefined");
             options.AddArgument("--webrtc-ip-handling-policy=default_public_interface_only");
             options.AddArgument("--font-masking-mode=2");
-
+            //set default size as 980 * 845
+            options.AddArgument("--window-size=980,845");
             // Thiết lập user-data-dir
             options.AddArgument("--user-data-dir=" + Path.Combine(profilePath, "browser", name));
             options.AddArgument($"--proxy-server=http://{proxy.ToString()}");

@@ -13,7 +13,7 @@ namespace ManageGologin.Executor
         private bool _isInstalled;
         private IWebDriver _driver;
         private Profiles _profile;
-        public InstallRabby(ref ChromeDriver driver, Profiles profiles)
+        public InstallRabby(ChromeDriver driver, Profiles profiles)
         {
             _isInstalled = false;
             _driver = driver;

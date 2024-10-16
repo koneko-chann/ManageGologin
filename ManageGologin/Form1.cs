@@ -56,7 +56,7 @@ namespace ManageGologin
         private void ExitProgramBtn_Click(object sender, EventArgs e)
         {
             var chromeDriver = (ChromeDriver)webDrivers[0];
-            _profileManager.CloseProfile(ref chromeDriver);
+            _profileManager.CloseProfile( chromeDriver);
         }
 
         private void btnJsFolder_Click(object sender, EventArgs e)
@@ -386,6 +386,15 @@ namespace ManageGologin
         private void installRabbyBtn_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var temp = _profileManager as ProfileManager;
+            temp.GetTaskList().ForEach(x =>
+            {
+                LogInfo(x);
+            });
         }
     }
 }
